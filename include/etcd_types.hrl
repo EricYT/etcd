@@ -1,0 +1,11 @@
+-type wait_index() :: pos_integer().
+-type recursive() :: boolean().
+-type pre_exist() :: boolean().
+-type pre_value() :: string() | binary().
+-type dir() :: string() | binary().
+-type url() :: string().
+-type key() :: string() | binary().
+-type value() :: string() | binary().
+-type pos_timeout() ::  pos_integer() | 'infinity'.
+-type result() :: {ok, response() | [response()]} | {http_error, atom()}.
+-type response() :: any().
