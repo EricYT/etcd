@@ -39,8 +39,8 @@ etcd:delete("/message", infinity).
 ### watch
 ```erlang
 Result = etcd:watch("/foo", true, infinity),
-``true`` means recursive
 ```
+``true`` means recursive
 Watch for commands at index ``42``:
 ```erlang
 Result = etcd:watch_ex("/foo", 42, infinity),
