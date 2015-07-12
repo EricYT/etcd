@@ -8,36 +8,40 @@ Erlang bindings for [etcd](https://github.com/coreos/etcd) key value store.
 ```erlang
 etcd:start()
 ```
-### set
+### read
 ```erlang
-{ok, Response} = etcd:set("http://localhost:4001", "/message", "Hello world", 400).
+{ok, Response} = etcd:read("Hello world").
+
+{ok, Response} = etcd:read("Hello world", 5000).
 ```
-``"/message"`` is the key and ``"Hello world"`` is the value. ``400`` is the timeout.
-### get
+``"Hello world"`` is the value. ``5000`` is the timeout.
+### insert
 ```erlang
-{ok, Response} = etcd:get("http://localhost:4001", "/message", infinity).
+{ok, Response} = etcd:insert("/message", "Value", infinity).
 ```
-### test and set
+### insert_ex
 ```erlang
-etcd:set("http://localhost:4001", "/message", "one", infinity),
-{ok, Response} = etcd:test_and_set("http://localhost:4001", "/message", "one", "two", infinity).
+etcd:insert("/message", "one"),
+{ok, Response} = etcd:insert_ex("/message", "one", "two", infinity).
 ```
 Directories are also supported:
+### create directory
 ```erlang
-{ok, Response1} = etcd:set("http://localhost:4001", "/foo/message1", "Hello day", infinity),
-{ok, Response2} = etcd:set("http://localhost:4001", "/foo/message2", "Hello night", infinity),
-{ok, ResponseList} = etcd:get("http://localhost:4001", "/foo", infinity).
+{ok, Response1} = etcd:create_dir("/foo", infinity).
+{ok, Response2} = etcd:insert("/foo/message2", "Hello night", infinity).
+
 ```
 ### delete
 ```erlang
-etcd:set("http://localhost:4001", "/message", "Hello world", infinity),
-etcd:delete("http://localhost:4001", "/message", infinity).
+etcd:insert("/message", "Hello world", infinity),
+etcd:delete("/message", infinity).
 ```
 ### watch
 ```erlang
-Result = etcd:watch("http://localhost:4001", "/foo", infinity),
+Result = etcd:watch("/foo", true, infinity),
 ```
+``true`` means recursive
 Watch for commands at index ``42``:
 ```erlang
-Result = etcd:watch("http://localhost:4001", "/foo", 42, infinity),
+Result = etcd:watch_ex("/foo", 42, infinity),
 ```
