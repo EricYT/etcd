@@ -115,19 +115,30 @@ watch(Key, Recursive, Timeout) ->
   Response = request(Url, get, [], Timeout),
   handle_request_result(Response).
 
--spec watch_ex(key(), wait_index()) -> {ok, response()} | {error, response}.
+-spec watch_ex(key(), wait_index()) -> {ok, response()} | {error, response()}.
 watch_ex(Key, WaitIndex) ->
   watch_ex(Key, WaitIndex, true, 'infinity').
 
--spec watch_ex(key(), wait_index(), recursive()) -> {ok, response()} | {error, response}.
+-spec watch_ex(key(), wait_index(), recursive()) -> {ok, response()} | {error, response()}.
 watch_ex(Key, WaitIndex, Recursive) when is_boolean(Recursive) ->
   watch_ex(Key, WaitIndex, Recursive, 'infinity').
 
--spec watch_ex(key(), wait_index(), recursive(), pos_timeout()) -> {ok, response()} | {error, response}.
+-spec watch_ex(key(), wait_index(), recursive(), pos_timeout()) -> {ok, response()} | {error, response()}.
 watch_ex(Key, WaitIndex, Recursive, Timeout) ->
   WaitParams = encode_params([{recursive, Recursive}, {wait, true}, {waitIndex, WaitIndex}]),
   Url  = url() ++ convert_to_string(Key) ++ "?" ++ WaitParams,
   Response = request(Url, get, [], Timeout),
+  handle_request_result(Response).
+
+-spec delete(key()) -> {ok, response()} | {error, response()}.
+delete(Key) ->
+  delete(Key, false).
+
+-spec delete(key(), recursive()) -> {ok, response()} | {error, response()}.
+delete(Key, Recursive) ->
+  DeleteParams = encode_params([{recursive, Recursive}]),
+  Url  = url() ++ convert_to_string(Key) ++ "?" ++ DeleteParams,
+  Response = request(Url, delete, []),
   handle_request_result(Response).
 
 %% internal functions
