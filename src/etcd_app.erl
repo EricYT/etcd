@@ -10,8 +10,6 @@
 %% ===================================================================
 
 start(_StartType, _StartArgs) ->
-  %%TODO:DEBUG
-  reloader:start(),
   etcd_sup:start_link().
 
 stop(_State) ->

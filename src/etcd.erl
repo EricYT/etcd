@@ -133,7 +133,7 @@ watch_ex(Key, WaitIndex, Recursive, Timeout) ->
 %% internal functions
 %% Just for version 2.**
 url() ->
-  Url = config(etcd_utl, "http://127.0.0.1:4001"),
+  Url = config(etcd_url, "http://127.0.0.1:4001"),
   Url ++ "/v2" ++ "/keys".
 
 config(Key, Default) ->
@@ -150,26 +150,31 @@ request(Url, Method, Body) ->
 
 request(Url, Method, Body, Timeout) ->
   Body_ = encode_params(Body),
-io:format("----------> Url:~p Method:~p Body:~p~n", [Url, Method, Body_]),
+%%io:format("----------> Url:~p Method:~p Body:~p~n", [Url, Method, Body_]),
   Headers = [{"Content-Type", "application/x-www-form-urlencoded"}],
   lhttpc:request(Url, Method, Headers, Body_, Timeout).
 
 %% @private
 handle_request_result(Result) ->
   case Result of
-    {ok, {{StatusCode, _ReasonPhrase}, _Hdrs, ResponseBody}} ->
-      io:format("--------> code:~p~n", [Result]),
+    {ok, {{StatusCode, _ReasonPhrase}, Hdrs, ResponseBody}} ->
+      %%io:format("--------> code:~p~n", [Result]),
+      EtcdIndex = list_to_integer(proplists:get_value("X-Etcd-Index", Hdrs)),
       case StatusCode div 100 of
         2 ->
-         Decoded = jiffy:decode(ResponseBody),
-         {ok, Decoded};
+         Decoded = try
+                     jiffy:decode(ResponseBody)
+                   catch E:R ->
+                           ResponseBody
+                   end,
+         {ok, {EtcdIndex, Decoded}};
         _ ->
           Error = try
             jiffy:decode(ResponseBody)
           catch _:_ ->
             ResponseBody
           end,
-          {error, Error}
+          {error, {EtcdIndex, Error}}
       end;
     Error -> Error
   end.
