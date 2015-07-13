@@ -170,7 +170,7 @@ handle_request_result(Result) ->
   case Result of
     {ok, {{StatusCode, _ReasonPhrase}, Hdrs, ResponseBody}} ->
       %%io:format("--------> code:~p~n", [Result]),
-      EtcdIndex = list_to_integer(proplists:get_value("X-Etcd-Index", Hdrs)),
+      %%EtcdIndex = list_to_integer(proplists:get_value("X-Etcd-Index", Hdrs)),
       case StatusCode div 100 of
         2 ->
          Decoded = try
@@ -178,14 +178,14 @@ handle_request_result(Result) ->
                    catch E:R ->
                            ResponseBody
                    end,
-         {ok, {EtcdIndex, Decoded}};
+         {ok, Decoded};
         _ ->
           Error = try
             jiffy:decode(ResponseBody)
           catch _:_ ->
             ResponseBody
           end,
-          {error, {EtcdIndex, Error}}
+          {error, Error}
       end;
     Error -> Error
   end.
