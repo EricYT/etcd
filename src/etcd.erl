@@ -141,11 +141,21 @@ delete(Key, Recursive) ->
   Response = request(Url, delete, []),
   handle_request_result(Response).
 
+-spec self() -> {ok, response()} | {error, response()}.
+self() ->
+  Url  = url_stats() ++ "/self",
+  Response = request(Url, get, []),
+  handle_request_result(Response).
+
 %% internal functions
 %% Just for version 2.**
 url() ->
-  Url = config(etcd_url, "http://127.0.0.1:4001"),
+  Url = config(etcd_url, "http://192.168.59.103:4001"),
   Url ++ "/v2" ++ "/keys".
+
+url_stats() ->
+  Url = config(etcd_url, "http://192.168.59.103:4001"),
+  Url ++ "/v2" ++ "/stats".
 
 config(Key, Default) ->
   config(etcd, Key, Default).
