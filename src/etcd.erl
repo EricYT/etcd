@@ -76,6 +76,18 @@ insert_ex(Key, PreValue, Value, TTL) ->
   Response = request(Url, put, PayLoad),
   handle_request_result(Response).
 
+-spec set(key(), value()) -> {ok, response()} | {error, response}.
+set(Key, Value) ->
+  set(Key, Value, 'infinity').
+
+-spec set(key(), value(), pos_timeout()) -> {ok, response()} | {error, response}.
+set(Key, Value, TTL) ->
+  TTL_ = ttl(TTL),
+  Url  = url() ++ convert_to_string(Key),
+  PayLoad = TTL_ ++ [{value, Value}],
+  Response = request(Url, put, PayLoad),
+  handle_request_result(Response).
+
 -spec update(key(), value()) -> {ok, response()} | {error, response()}.
 update(Key, Value) ->
   update(Key, Value, 'infinity').
@@ -150,11 +162,11 @@ self() ->
 %% internal functions
 %% Just for version 2.**
 url() ->
-  Url = config(etcd_url, "http://192.168.59.103:4001"),
+  Url = config(etcd_url, "http://127.0.0.1:4001"),
   Url ++ "/v2" ++ "/keys".
 
 url_stats() ->
-  Url = config(etcd_url, "http://192.168.59.103:4001"),
+  Url = config(etcd_url, "http://127.0.0.1:4001"),
   Url ++ "/v2" ++ "/stats".
 
 config(Key, Default) ->
